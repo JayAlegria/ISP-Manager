@@ -1,26 +1,29 @@
 "use client"
-import React, { FC, useRef } from 'react'
+import { FC, useEffect } from 'react'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '../ui/drawer'
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend } from '../ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field'
 import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Button } from '../ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
-import { createServicePlan } from '@/actions/plans/create'
-import { Controller, Form, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { FormValues, servicePlanSchema } from '@/schemas/servicePlanSchema'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from 'sonner'
 import { Spinner } from '../ui/spinner'
+import { updateServicePlan } from '@/actions/plans/update'
 
 
-interface TAddPlanDrawer {
+export interface TAddPlanDrawer {
     open: boolean,
     setOpen: () => void,
+    plan?: FormValues & {
+        id?: string
+    }
 }
 
-const AddPlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen }) => {
+const UpdatePlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen, plan }) => {
     const form = useForm<FormValues>({
         resolver: zodResolver(servicePlanSchema),
         defaultValues: {
@@ -32,11 +35,29 @@ const AddPlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen }) => {
         mode: "onChange"
     })
 
+    useEffect(() => {
+        if (plan) {
+            form.reset({
+                name: plan.name,
+                monthly_fee: plan.monthly_fee,
+                speed: plan.speed ?? 0,
+                status: plan.status === "active" ? "active" : "inactive",
+            });
+        } else {
+            form.reset({
+                name: "",
+                monthly_fee: "",
+                speed: "0",
+                status: "active",
+            });
+        }
+    }, [plan, form]);
+
     async function onSubmit(data: FormValues) {
-        const res = await createServicePlan(data)
+        const res = await updateServicePlan(data, plan?.id || "")
         if (res.success) {
-            toast.success("New service plan created", { position: "top-right" })
-            form.reset()
+            toast.success("Plan updated", { position: "top-right" })
+            setOpen()
         } else {
             toast.error(res.message, { position: "top-right" })
         }
@@ -50,9 +71,9 @@ const AddPlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen }) => {
     return (
         <Drawer open={open} onOpenChange={setOpen} swipeDirection='right'>
             <DrawerContent>
-                <form onSubmit={form.handleSubmit(onSubmit)} id='add-service-plan'>
+                <form onSubmit={form.handleSubmit(onSubmit)} id='update-service-plan'>
                     <DrawerHeader className='py-5'>
-                        <DrawerTitle className="font-bold">Add new plan</DrawerTitle>
+                        <DrawerTitle className="font-bold">Update {`${plan?.name}`}</DrawerTitle>
                     </DrawerHeader>
                     <Separator />
                     <div className='mt-5 px-5'>
@@ -148,11 +169,11 @@ const AddPlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen }) => {
                     </div>
                 </form>
                 <DrawerFooter >
-                    <Button type='submit' form='add-service-plan'>{form.formState.isSubmitting ? <Spinner /> : "Add"}</Button>
+                    <Button type='submit' form='update-service-plan'>{form.formState.isSubmitting ? <Spinner /> : "Update Plan"}</Button>
                     <Button className="bg-gray-200 text-foreground hover:text-background" onClick={onCancel}>Cancel</Button>
                 </DrawerFooter>
             </DrawerContent>
         </Drawer>
     )
 }
-export default AddPlanDrawer;
+export default UpdatePlanDrawer;

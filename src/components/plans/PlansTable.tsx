@@ -1,25 +1,33 @@
 "use client"
-import { EllipsisVertical, Edit, Ban, Trash, RotateCcw } from 'lucide-react'
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../ui/dropdown-menu'
 import { TableCaption, TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from '../ui/table'
 import { Button } from '../ui/button'
 import { FC, useState } from 'react'
 import { Badge } from '../ui/badge'
 import { deleteServicePlan } from '@/actions/plans/delete'
 import { toast } from 'sonner'
-import { Spinner } from '../ui/spinner'
 import { Skeleton } from '../ui/skeleton'
 import { FormValues } from '@/schemas/servicePlanSchema'
 import { updateServicePlan } from '@/actions/plans/update'
 import { TPlans } from '@/types/plans'
 import { TActionResponse } from '@/types/response'
+import UpdatePlanDrawer from './UpdatePlanDrawer'
+import { flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
+import { getColumns } from "./Columns";
 
 interface TPlansTable {
     plans: TPlans[]
 }
+
 const PlansTable: FC<TPlansTable> = ({ plans }) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [openUpdateDrawer, setOpenUpdateDrawer] = useState<boolean>(false)
+    const [selectedPlan, setSelectedPlan] = useState<FormValues>({
+        name: "",
+        monthly_fee: "",
+        speed: "",
+        status: "inactive"
+    })
 
     const executeAction = async (
         action: () => Promise<TActionResponse<unknown>>
@@ -39,10 +47,9 @@ const PlansTable: FC<TPlansTable> = ({ plans }) => {
         }
     };
 
-    const handleDeletePlan = (id: string) =>
-        executeAction(() => deleteServicePlan(id));
+    const handleDeletePlan = (id: string) => executeAction(() => deleteServicePlan(id));
 
-    const handleDisablePlan = (plan: TPlans) =>
+    const handleDisablePlan = (plan: TPlans) => {
         executeAction(() =>
             updateServicePlan(
                 {
@@ -53,8 +60,9 @@ const PlansTable: FC<TPlansTable> = ({ plans }) => {
                 plan.id.toString()
             )
         );
+    }
 
-    const handleEnablePlan = (plan: TPlans) =>
+    const handleEnablePlan = (plan: TPlans) => {
         executeAction(() =>
             updateServicePlan(
                 {
@@ -65,72 +73,74 @@ const PlansTable: FC<TPlansTable> = ({ plans }) => {
                 plan.id.toString()
             )
         );
+    }
+
+    const handleUpdateDrawer = (plan?: any) => {
+        setSelectedPlan(plan)
+        setOpenUpdateDrawer(!openUpdateDrawer)
+    }
+
+    const table = useReactTable({
+        data: plans,
+        columns: getColumns({
+            onEdit: handleUpdateDrawer,
+            onDelete: handleDeletePlan,
+            onEnable: handleEnablePlan,
+            onDisable: handleDisablePlan,
+        }),
+
+        getCoreRowModel: getCoreRowModel(),
+    });
+
     return (
-        <Table className='mt-5'>
-            <TableCaption>List of service plans</TableCaption>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Plan Name</TableHead>
-                    <TableHead>Speed</TableHead>
-                    <TableHead>Monthly</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            {isLoading
-                ? <TableBody>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <TableRow key={index}>
-                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+        <div className='border rounded-2xl p-2 mt-5'>
+            <Table className='mt-5'>
+                <TableCaption>List of service plans</TableCaption>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <TableHead key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                </TableHead>
+                            ))}
                         </TableRow>
                     ))}
-                </TableBody>
-                : <TableBody>
-                    {
-                        plans.map(plan => (
-                            <TableRow key={plan.id}>
-                                <TableCell>{plan.name}</TableCell>
-                                <TableCell>{plan.speed} Mbps</TableCell>
-                                <TableCell>P{plan.monthly_fee}</TableCell>
-                                <TableCell>
-                                    {
-                                        plan.status?.toLowerCase() === "active" &&
-                                        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
-                                            {plan.status?.toLowerCase()}
-                                        </Badge>
-                                    }
-                                    {
-                                        plan.status?.toLowerCase() === "inactive" &&
-                                        <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
-                                            {plan.status?.toLowerCase()}
-                                        </Badge>
-                                    }
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger render={<Button variant="ghost"> <EllipsisVertical /></Button>} />
-                                        <DropdownMenuContent>
-                                            <DropdownMenuItem><Edit /> Edit</DropdownMenuItem>
-
-                                            {plan.status === "active" &&
-                                                <DropdownMenuItem className="text-red-400" onClick={() => handleDisablePlan(plan)}><Ban /> Disable</DropdownMenuItem>
-                                            }
-                                            {plan.status === "inactive" &&
-                                                <DropdownMenuItem onClick={() => handleEnablePlan(plan)}><RotateCcw /> Enable</DropdownMenuItem>
-                                            }
-                                            <DropdownMenuItem className="text-red-400" onClick={() => handleDeletePlan(plan.id.toString())}><Trash />Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
+                </TableHeader>
+                {isLoading
+                    ? <TableBody>
+                        {Array.from({ length: 5 }).map((_, index) => (
+                            <TableRow key={index}>
+                                <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                             </TableRow>
-                        ))
-                    }
-                </TableBody>
-            }
-        </Table>
+                        ))}
+                    </TableBody>
+                    : <TableBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                }
+            </Table>
+            <UpdatePlanDrawer open={openUpdateDrawer} setOpen={handleUpdateDrawer} plan={selectedPlan} />
+        </div>
 
     )
 }

@@ -5,7 +5,6 @@ import { plans } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function deleteServicePlan(id: string): Promise<TActionResponse<plans>> {
-    console.log(id)
     try {
         const plan = await prisma.plans.findUnique({
             where: {

@@ -12,7 +12,7 @@ export async function getServicePlans() {
             data: serializePrisma(plans)
         }
     } catch (error) {
-        console.log("Failed fetching plans", error)
+        console.error("Failed fetching plans", error)
         return {
             success: false,
             message: "Failed to fetch plans"

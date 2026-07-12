@@ -14,7 +14,7 @@ export async function updateServicePlan(formData: FormValues, id: string):Promis
             },
             data: {
                 name: formData.name,
-                speed: Number(formData.speed),
+                speed: formData.speed,
                 monthly_fee: formData.monthly_fee,
                 plan_id: formData.name.toLowerCase().replace(/\s+/g, "_") || "",
                 status: formData.status

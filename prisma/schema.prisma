@@ -531,7 +531,7 @@ model plans {
   monthly_fee String
   plan_id     String
   status      String
-  speed       Int
+  speed       String
   user        user[]
 
   @@schema("public")
@@ -566,13 +566,13 @@ model user {
   created_at        DateTime            @default(now()) @db.Timestamptz(6)
   facebook_name     String
   facebook_id       String?
-  Address           String?
-  billing_day       DateTime?           @db.Date
+  address           String?
   status            String?
   name              String?
   plan              BigInt?
   account_number    String              @unique
   email             String?
+  billing_day       Int?                @db.SmallInt
   billing           billing[]
   payments          payments[]
   reference_numbers reference_numbers[]

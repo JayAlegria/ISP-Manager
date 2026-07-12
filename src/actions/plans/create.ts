@@ -22,7 +22,7 @@ export async function createServicePlan(
         const res = await prisma.plans.create({
             data: {
                 name: formData.name,
-                speed: formData.speed ? Number(formData.speed) : null,
+                speed: formData.speed,
                 monthly_fee: formData.monthly_fee,
                 status: formData.status,
                 plan_id: formData.name.toLowerCase().replace(/\s+/g, "_") || ""
