@@ -111,6 +111,15 @@ const PlansTable: FC<TPlansTable> = ({ plans }) => {
                         </TableRow>
                     ))}
                 </TableHeader>
+                {table.getRowModel().rows.length === 0 &&
+                    <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                                    No service plan found.
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                }
                 {isLoading
                     ? <TableBody>
                         {Array.from({ length: 5 }).map((_, index) => (

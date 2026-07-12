@@ -11,8 +11,6 @@ async function page() {
         value: plan.id.toString(),
     }))
 
-    console.log(customersRes.data)
-
     return (
         <>
             <ContentHeader pageTitle="Customers" />
