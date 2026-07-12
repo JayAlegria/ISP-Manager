@@ -95,7 +95,6 @@ const PlansTable: FC<TPlansTable> = ({ plans }) => {
     return (
         <div className='border rounded-2xl p-2 mt-5'>
             <Table className='mt-5'>
-                <TableCaption>List of service plans</TableCaption>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>

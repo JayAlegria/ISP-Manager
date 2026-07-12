@@ -4,6 +4,7 @@ export const userSchema = z.object({
     account_number: z.string().min(1, "Account number is required"),
     name: z.string().min(1, "Name is required"),
     facebook_name: z.string(),
+    contact_number: z.string().min(1, "Contact number is required"),
     address: z.string(),
     status: z.enum(["active","inactive"], {error: "Please select status"}),
     plan: z.string().min(1, "Plan required"),

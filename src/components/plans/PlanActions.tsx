@@ -17,7 +17,7 @@ export function PlanActions({ plan, onEdit, onDelete, onEnable, onDisable }: Pla
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-          <EllipsisVertical />
+          <EllipsisVertical className="size-4"/>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent>

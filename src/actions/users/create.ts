@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { UserFormOutput } from "@/schemas/userSchema";
 import { TActionResponse } from "@/types/response";
-import { success } from "zod";
+import { revalidatePath } from "next/cache";
 
 export async function createUser(formData: UserFormOutput): Promise<TActionResponse<UserFormOutput>> {
     try {
@@ -26,6 +26,7 @@ export async function createUser(formData: UserFormOutput): Promise<TActionRespo
                 account_number: formData.account_number,
                 name: formData.name,
                 facebook_name: formData.facebook_name,
+                contact_number: formData.contact_number,
                 address: formData.address,
                 status: formData.status,
                 plan: Number(formData.plan),
@@ -34,9 +35,10 @@ export async function createUser(formData: UserFormOutput): Promise<TActionRespo
 
             }
         })
+        revalidatePath("/customers")
         return {
             success: true,
-            message: `Custer ${userInfo.name} added to the record`
+            message: `Customer ${userInfo.name} added to the record`
         }
     } catch (error) {
         console.error("Error creating customer", error)

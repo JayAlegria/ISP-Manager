@@ -573,6 +573,7 @@ model user {
   account_number    String              @unique
   email             String?
   billing_day       Int?                @db.SmallInt
+  contact_number    String?
   billing           billing[]
   payments          payments[]
   reference_numbers reference_numbers[]

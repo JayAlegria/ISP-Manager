@@ -71,12 +71,12 @@ const UpdatePlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen, plan }) => {
     return (
         <Drawer open={open} onOpenChange={setOpen} swipeDirection='right'>
             <DrawerContent>
-                <form onSubmit={form.handleSubmit(onSubmit)} id='update-service-plan'>
+                <form onSubmit={form.handleSubmit(onSubmit)} id='update-service-plan' className='flex min-h-0 flex-1 flex-col'>
                     <DrawerHeader className='py-5'>
                         <DrawerTitle className="font-bold">Update {`${plan?.name}`}</DrawerTitle>
                     </DrawerHeader>
                     <Separator />
-                    <div className='mt-5 px-5'>
+                    <div className='min-h-0 flex-1 overflow-y-auto px-5 py-5'>
                         <FieldGroup>
                             <Controller
                                 name="name"

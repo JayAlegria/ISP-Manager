@@ -1,16 +1,23 @@
-import CustomersCount from "@/components/customers/CustomersCount"
 import { ContentHeader } from "@/components/layout/ContentHeader"
-import CustomersContent from "@/components/customers/CustomersContent"
-import CustomersHeader from "@/components/customers/CustomersHeader"
+import CustomersTable from "@/components/customers/CustomersTable"
+import { getCustomers } from "@/actions/users/get"
+import { getServicePlans } from "@/actions/plans/get"
 
-function page() {
+async function page() {
+    const [customersRes, plansRes] = await Promise.all([getCustomers(), getServicePlans()])
+
+    const planOptions = (plansRes.data ?? []).map((plan) => ({
+        label: plan.name,
+        value: plan.id.toString(),
+    }))
+
+    console.log(customersRes.data)
+
     return (
         <>
             <ContentHeader pageTitle="Customers" />
             <div className="py-5">
-                <CustomersHeader />
-                <CustomersCount />
-                <CustomersContent />
+                <CustomersTable customers={customersRes.data ?? []} planOptions={planOptions} />
             </div>
         </>
     )

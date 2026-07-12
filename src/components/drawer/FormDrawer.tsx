@@ -19,12 +19,12 @@ const FormDrawer: FC<TFormDrawer> = ({ id, title, formInputs, buttonText, onCanc
     return (
         <Drawer open={IsOpen} onOpenChange={setIsOpen} swipeDirection='right'>
             <DrawerContent>
-                <form onSubmit={form.handleSubmit(onSubmit)} id={id}>
+                <form onSubmit={form.handleSubmit(onSubmit)} id={id} className='flex min-h-0 flex-1 flex-col'>
                     <DrawerHeader className='py-5'>
                         <DrawerTitle className="font-bold">{title}</DrawerTitle>
                     </DrawerHeader>
                     <Separator />
-                    <div className='mt-5 px-5'>
+                    <div className='min-h-0 flex-1 overflow-y-auto px-5 py-5'>
                         {formInputs}
                     </div>
                 </form>
