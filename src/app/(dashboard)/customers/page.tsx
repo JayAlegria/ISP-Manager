@@ -13,7 +13,6 @@ async function page() {
 
     return (
         <>
-            <ContentHeader pageTitle="Customers" />
             <div className="py-5">
                 <CustomersTable customers={customersRes.data ?? []} planOptions={planOptions} />
             </div>

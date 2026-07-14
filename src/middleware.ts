@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
   
   if (pathname.startsWith("/dashboard") && !user) {
     return NextResponse.redirect(
-      new URL("/login", request.url)
+      new URL("/admin-login", request.url)
     );
   }
 

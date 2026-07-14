@@ -7,7 +7,6 @@ async function page() {
 
     return (
         <>
-            <ContentHeader pageTitle="Payments" />
             <div className="py-5">
                 <PaymentsTable payments={paymentsRes.data ?? []} />
             </div>

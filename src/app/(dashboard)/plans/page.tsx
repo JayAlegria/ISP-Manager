@@ -12,7 +12,6 @@ async function page() {
   })
   return (
     <>
-      <ContentHeader pageTitle='Service Plans' />
       <div className='py-5'>
         <PlansHeader />
         <PlansTable plans={plans}/>
