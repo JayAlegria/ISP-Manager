@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from 'react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
+import { Skeleton } from '../ui/skeleton'
 import { getBillingDetails } from '@/actions/billing/get'
 import { TBillingWithCustomer } from '@/types/billing'
 
@@ -12,29 +13,54 @@ export interface TBillingDetailsDrawer {
     billingId?: string
 }
 
+function DetailRowSkeleton() {
+    return (
+        <div className="flex justify-between">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-4 w-32" />
+        </div>
+    )
+}
+
+function BillingDetailsSkeleton() {
+    return (
+        <div className="space-y-6">
+            <div>
+                <Skeleton className="h-5 w-40 mb-3" />
+                <div className="space-y-2">
+                    {Array.from({ length: 4 }).map((_, i) => <DetailRowSkeleton key={i} />)}
+                </div>
+            </div>
+
+            <Separator />
+
+            <div>
+                <Skeleton className="h-5 w-40 mb-3" />
+                <div className="space-y-2">
+                    {Array.from({ length: 6 }).map((_, i) => <DetailRowSkeleton key={i} />)}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const BillingDetailsDrawer: FC<TBillingDetailsDrawer> = ({ open, setOpen, billingId }) => {
     const [billing, setBilling] = useState<TBillingWithCustomer & { payment?: any } | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         if (!open || !billingId) return
 
+        setBilling(null)
+
         const loadDetails = async () => {
-            setIsLoading(true)
-            try {
-                const res = await getBillingDetails(billingId)
-                if (res.success && res.data) {
-                    setBilling(res.data as any)
-                }
-            } finally {
-                setIsLoading(false)
+            const res = await getBillingDetails(billingId)
+            if (res.success && res.data) {
+                setBilling(res.data as any)
             }
         }
 
         loadDetails()
     }, [open, billingId])
-
-    if (!billing) return null
 
     return (
         <Drawer open={open} onOpenChange={setOpen} swipeDirection="right">
@@ -44,6 +70,9 @@ const BillingDetailsDrawer: FC<TBillingDetailsDrawer> = ({ open, setOpen, billin
                 </DrawerHeader>
                 <Separator />
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+                    {!billing ? (
+                        <BillingDetailsSkeleton />
+                    ) : (
                     <div className="space-y-6">
                         <div>
                             <h3 className="font-semibold mb-3">Customer Information</h3>
@@ -128,6 +157,7 @@ const BillingDetailsDrawer: FC<TBillingDetailsDrawer> = ({ open, setOpen, billin
                             </>
                         )}
                     </div>
+                    )}
                 </div>
                 <div className="border-t p-4">
                     <Button className="w-full" onClick={setOpen}>Close</Button>

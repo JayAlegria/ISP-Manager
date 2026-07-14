@@ -47,44 +47,38 @@ export async function recordPayment(
         const existingPayment = await prisma.payments.findFirst({
             where: {
                 billing_id: BigInt(billingId),
-                verified: true,
+            },
+            orderBy: {
+                created_at: "desc",
             },
         })
 
-        if (existingPayment) {
+        if (existingPayment && existingPayment.verification_status !== "REJECTED") {
             return {
                 success: false,
-                message: "This bill already has a verified payment",
+                message: "This bill already has a payment pending verification or already verified",
             }
         }
-
-        const now = new Date()
 
         await prisma.payments.create({
             data: {
                 billing_id: BigInt(billingId),
                 user_id: billing.customer_id,
                 reference_number: formData.reference_number,
-                verified: formData.verification_status === "AUTO_VERIFIED",
-                verified_at: formData.verification_status === "AUTO_VERIFIED" ? now : null,
-                verification_status: formData.verification_status,
-            },
-        })
-
-        await prisma.billing.update({
-            where: {
-                id: BigInt(billingId),
-            },
-            data: {
-                status: formData.verification_status === "AUTO_VERIFIED" ? "PAID" : "PENDING",
+                amount: formData.amount,
+                payment_method: formData.payment_method,
+                verified: false,
+                verified_at: null,
+                verification_status: "PENDING",
             },
         })
 
         revalidatePath("/billing")
+        revalidatePath("/payments")
 
         return {
             success: true,
-            message: "Payment recorded successfully",
+            message: "Payment recorded and pending verification",
         }
     } catch (error) {
         console.error("Failed to record payment", error)

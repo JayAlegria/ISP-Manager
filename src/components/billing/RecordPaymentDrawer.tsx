@@ -13,11 +13,14 @@ import { Spinner } from '../ui/spinner'
 import { RecordPaymentInput, RecordPaymentOutput, recordPaymentSchema } from '@/schemas/billingSchema'
 import { recordPayment } from '@/actions/billing/payment'
 import { TBillingWithCustomer } from '@/types/billing'
+import { paymentMethodLabels } from '@/types/payments'
+
+const paymentMethodOptions = Object.entries(paymentMethodLabels).map(([value, label]) => ({ label, value }))
 
 const emptyValues: RecordPaymentInput = {
     reference_number: "",
     amount: "",
-    verification_status: "MANUAL_REVIEW",
+    payment_method: "",
 }
 
 export interface TRecordPaymentDrawer {
@@ -33,22 +36,6 @@ const RecordPaymentDrawer: FC<TRecordPaymentDrawer> = ({ open, setOpen, billing,
         defaultValues: emptyValues,
         mode: "onChange",
     })
-
-    const verificationStatus: { label: string, value: string }[] = [
-        {
-            label: "Manual Review",
-            value: "MANUAL_REVIEW"
-        },
-        {
-            label: "Auto Verified",
-            value: "AUTO_VERIFIED"
-        },
-        {
-            label: "Pending",
-            value: "PENDING"
-        }
-
-    ]
 
     async function onSubmit(formData: RecordPaymentOutput) {
         if (!billing) return
@@ -127,25 +114,26 @@ const RecordPaymentDrawer: FC<TRecordPaymentDrawer> = ({ open, setOpen, billing,
                             />
 
                             <Controller
+                                name="payment_method"
                                 control={form.control}
-                                name="verification_status"
                                 render={({ field, fieldState }) => (
-                                    <Field>
-                                        <FieldLabel htmlFor="verification-status">Verification Status</FieldLabel>
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor={field.name}>Payment Method</FieldLabel>
                                         <Select
-                                            {...field}
+                                            items={paymentMethodOptions}
                                             name={field.name}
                                             value={field.value}
                                             onValueChange={field.onChange}
-                                            items={verificationStatus}
                                         >
-                                            <SelectTrigger aria-invalid={fieldState.invalid}>
-                                                <SelectValue placeholder="Select status" />
+                                            <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="w-full">
+                                                <SelectValue placeholder="Select payment method" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {verificationStatus.map((status) => (
-                                                        <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
+                                                    {paymentMethodOptions.map((option) => (
+                                                        <SelectItem key={option.value} value={option.value}>
+                                                            {option.label}
+                                                        </SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
@@ -154,6 +142,7 @@ const RecordPaymentDrawer: FC<TRecordPaymentDrawer> = ({ open, setOpen, billing,
                                     </Field>
                                 )}
                             />
+
                         </FieldGroup>
                     </div>
                 </form>

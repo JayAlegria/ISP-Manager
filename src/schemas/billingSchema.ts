@@ -3,9 +3,7 @@ import { z } from "zod";
 export const recordPaymentSchema = z.object({
     reference_number: z.string().min(1, "Reference number is required"),
     amount: z.string().min(1, "Amount is required"),
-    verification_status: z.enum(["AUTO_VERIFIED", "MANUAL_REVIEW", "PENDING"], {
-        error: "Please select a verification status",
-    }),
+    payment_method: z.string().min(1, "Payment method is required"),
 });
 
 export const voidBillingSchema = z.object({
