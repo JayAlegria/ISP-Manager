@@ -31,9 +31,9 @@ const statusOptions = [
 
 const columnLabels: Record<string, string> = {
     billing_period: "Billing Period",
-    account_number: "Account Number",
-    name: "Customer Name",
-    plans_name: "Plan",
+    customer_account_number: "Account Number",
+    customer_name: "Customer Name",
+    customer_plans_name: "Plan",
     amount: "Billing Amount",
     due_date: "Due Date",
     status: "Status",
@@ -47,6 +47,7 @@ interface BillingToolbarProps {
 }
 
 export function BillingToolbar({ table, onRefresh, onGenerate, isRefreshing }: BillingToolbarProps) {
+    console.log(table.getAllColumns())
     return (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-2">
@@ -87,7 +88,7 @@ export function BillingToolbar({ table, onRefresh, onGenerate, isRefreshing }: B
                     <DropdownMenuTrigger>
                         <SlidersHorizontal />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className='w-fit'>
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide())

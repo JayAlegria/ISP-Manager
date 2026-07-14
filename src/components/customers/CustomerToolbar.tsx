@@ -114,7 +114,7 @@ export function CustomerToolbar({ table, planOptions, onRefresh, onAdd, isRefres
                     <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="Toggle columns" />}>
                         <SlidersHorizontal />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-fit">
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide())

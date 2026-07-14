@@ -1,7 +1,7 @@
 "use client";
 
 import { Table } from "@tanstack/react-table";
-import { RefreshCw, SlidersHorizontal } from "lucide-react";
+import { CalendarIcon, RefreshCw, SlidersHorizontal } from "lucide-react";
 import { TPaymentWithDetails } from "@/types/payments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,9 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { useState } from "react";
 
 const statusOptions = [
     { label: "All statuses", value: "all" },
@@ -36,10 +39,10 @@ const paymentMethodOptions = [
 
 const columnLabels: Record<string, string> = {
     created_at: "Payment Date",
-    account_number: "Account Number",
-    name: "Customer Name",
+    billing_customer_account_number: "Account Number",
+    billing_customer_name: "Customer Name",
     billing_period: "Billing Period",
-    amount: "Billing Amount",
+    billing_amount: "Billing Amount",
     payment_method: "Payment Method",
     reference_number: "Reference Number",
     verification_status: "Verification Status",
@@ -53,6 +56,15 @@ interface PaymentsToolbarProps {
 }
 
 export function PaymentsToolbar({ table, onRefresh, isRefreshing }: PaymentsToolbarProps) {
+    const [popoverOpen, setPopoverOpen] = useState(false)
+
+    const handleDateSelectData = (date: Date) => {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const billingPeriod = `${year}-${month}`
+         table.getColumn("billing_period")?.setFilterValue(billingPeriod || undefined)
+        setPopoverOpen(false)
+    }
     return (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-4">
@@ -65,13 +77,30 @@ export function PaymentsToolbar({ table, onRefresh, isRefreshing }: PaymentsTool
                     />
                 </Field>
                 <Field>
-                    <Input
+                    {/* <Input
                         placeholder="Billing period (YYYY-MM)"
                         value={(table.getColumn("billing_period")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
                             table.getColumn("billing_period")?.setFilterValue(event.target.value || undefined)
                         }
-                    />
+                    /> */}
+                    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                        <PopoverTrigger
+                            className="w-full flex items-center justify-start gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <CalendarIcon className="h-4 w-4" />
+                            <span className="text-left flex-1">{(table.getColumn("billing_period")?.getFilterValue() as string) ?? ""}</span>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                value={(table.getColumn("billing_period")?.getFilterValue() as string) ?? ""}
+                                onSelect={(value) => handleDateSelectData(value)}
+                                disabled={(date: Date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                }
+                            />
+                        </PopoverContent>
+                    </Popover>
                 </Field>
                 <Field className="w-full">
                     <Select
@@ -125,7 +154,7 @@ export function PaymentsToolbar({ table, onRefresh, isRefreshing }: PaymentsTool
                     <DropdownMenuTrigger>
                         <SlidersHorizontal />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-fit">
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide())

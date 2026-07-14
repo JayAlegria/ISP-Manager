@@ -16,7 +16,7 @@ export async function login(formData: FormData) {
         }
     )
     if(error) {
-        redirect(`/admin-login?error`);
+        redirect(`/admin-login?error=${error}`);
     }
     redirect("/dashboard")
 

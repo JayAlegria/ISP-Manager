@@ -19,7 +19,7 @@ export const ContentHeader = () => {
   const path = usePathname()
   const handleLogout = async () => {
     await logout()
-    router.push("/admin-login")
+    router.replace("/admin-login")
   }
   return (
     <>

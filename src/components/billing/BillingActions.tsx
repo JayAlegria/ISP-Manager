@@ -21,7 +21,7 @@ export function BillingActions({ billing, onView, onRecordPayment, onVoid }: Bil
                 <EllipsisVertical className="size-4" />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
+            <DropdownMenuContent className="w-fit">
                 <DropdownMenuItem onClick={() => onView(billing)}>
                     <Eye />
                     View Details
