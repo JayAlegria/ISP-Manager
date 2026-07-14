@@ -1,7 +1,7 @@
 "use client";
 
 import { Table } from "@tanstack/react-table";
-import { CalendarIcon, RefreshCw, SlidersHorizontal } from "lucide-react";
+import { CalendarIcon, RefreshCw, SlidersHorizontal, X } from "lucide-react";
 import { TPaymentWithDetails } from "@/types/payments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 
 const statusOptions = [
     { label: "All statuses", value: "all" },
@@ -62,8 +62,13 @@ export function PaymentsToolbar({ table, onRefresh, isRefreshing }: PaymentsTool
         const year = date.getFullYear()
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const billingPeriod = `${year}-${month}`
-         table.getColumn("billing_period")?.setFilterValue(billingPeriod || undefined)
+        table.getColumn("billing_period")?.setFilterValue(billingPeriod || undefined)
         setPopoverOpen(false)
+    }
+
+    const handleRemoveFilter = (e: any) => {
+        e.stopPropagation();
+        table.getColumn("billing_period")?.setFilterValue("")
     }
     return (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -77,19 +82,13 @@ export function PaymentsToolbar({ table, onRefresh, isRefreshing }: PaymentsTool
                     />
                 </Field>
                 <Field>
-                    {/* <Input
-                        placeholder="Billing period (YYYY-MM)"
-                        value={(table.getColumn("billing_period")?.getFilterValue() as string) ?? ""}
-                        onChange={(event) =>
-                            table.getColumn("billing_period")?.setFilterValue(event.target.value || undefined)
-                        }
-                    /> */}
                     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                         <PopoverTrigger
                             className="w-full flex items-center justify-start gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <CalendarIcon className="h-4 w-4" />
-                            <span className="text-left flex-1">{(table.getColumn("billing_period")?.getFilterValue() as string) ?? ""}</span>
+                            <span className="text-left flex-1">{(table.getColumn("billing_period")?.getFilterValue() as string) ?? "Pick a month"}</span>
+                            {table.getColumn("billing_period")?.getFilterValue() as string && <X onClick={(e) => handleRemoveFilter(e)} className="size-3" />}
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
