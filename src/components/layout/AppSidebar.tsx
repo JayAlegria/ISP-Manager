@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import AppSidebarHeader from "./AppSidebarHeader"
 import { Separator } from "../ui/separator"
-import { CreditCard, HouseWifi, LayoutDashboard, Receipt, User2 } from "lucide-react"
+import { CreditCard, HandPlatter, HouseWifi, LayoutDashboard, Receipt, User2 } from "lucide-react"
 import { ReactElement } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
@@ -31,7 +31,8 @@ const data: TSideBardata = {
     { title: "Customers", url: "/customers", icon: <User2 /> },
     { title: "Service Plans", url: "/plans", icon: <HouseWifi /> },
     { title: "Billing", url: "/billing", icon: <Receipt /> },
-    { title: "Payments", url: "/payments", icon: <CreditCard /> }
+    { title: "Payments", url: "/payments", icon: <CreditCard /> },
+    {title: "Technicians", url: "/technicians", icon: <HandPlatter />}
   ]
 }
 

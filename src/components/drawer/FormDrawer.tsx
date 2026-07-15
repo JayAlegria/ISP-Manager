@@ -14,8 +14,10 @@ interface TFormDrawer {
     onSubmit?: (data: any) => void
     onCancel?: () => void
     setIsOpen?: () => void
+    isSubmitHidden?: boolean
+
 }
-const FormDrawer: FC<TFormDrawer> = ({ id, title, formInputs, buttonText, onCancel, onSubmit, IsOpen, setIsOpen, form }) => {
+const FormDrawer: FC<TFormDrawer> = ({ isSubmitHidden, id, title, formInputs, buttonText, onCancel, onSubmit, IsOpen, setIsOpen, form }) => {
     return (
         <Drawer open={IsOpen} onOpenChange={setIsOpen} swipeDirection='right'>
             <DrawerContent>
@@ -29,8 +31,10 @@ const FormDrawer: FC<TFormDrawer> = ({ id, title, formInputs, buttonText, onCanc
                     </div>
                 </form>
                 <DrawerFooter >
-                    <Button type='submit' form={id}>{form.formState.isSubmitting ? <Spinner /> : buttonText}</Button>
-                    <Button className="bg-gray-200 text-foreground hover:text-background" onClick={onCancel}>Cancel</Button>
+                    {
+                        !isSubmitHidden && <Button type='submit' form={id}>{form.formState.isSubmitting ? <Spinner /> : buttonText}</Button>
+                    }
+                    <Button className="bg-gray-200 text-foreground hover:text-background" onClick={onCancel}>Close</Button>
                 </DrawerFooter>
             </DrawerContent>
         </Drawer>

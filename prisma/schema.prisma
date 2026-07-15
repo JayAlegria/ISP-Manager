@@ -604,6 +604,20 @@ model user {
   @@schema("public")
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model technician {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  employee_id    String   @unique
+  name           String
+  contact_number String
+  email          String
+  specialization String?
+  status         String   @default("active")
+
+  @@schema("public")
+}
+
 enum aal_level {
   aal1
   aal2
