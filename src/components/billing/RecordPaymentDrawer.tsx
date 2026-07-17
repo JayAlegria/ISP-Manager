@@ -10,6 +10,7 @@ import { Separator } from '../ui/separator'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
+import { FormSkeleton } from '../drawer/FormSkeleton'
 import { RecordPaymentInput, RecordPaymentOutput, recordPaymentSchema } from '@/schemas/billingSchema'
 import { recordPayment } from '@/actions/billing/payment'
 import { TBillingWithCustomer } from '@/types/billing'
@@ -65,16 +66,17 @@ const RecordPaymentDrawer: FC<TRecordPaymentDrawer> = ({ open, setOpen, billing,
                     </DrawerHeader>
                     <Separator />
                     <div className='min-h-0 flex-1 overflow-y-auto px-5 py-5'>
-                        <FieldGroup>
-                            <div className='text-sm mb-4'>
-                                <p className='text-muted-foreground mb-1'>Billing Period:</p>
-                                <p className='font-semibold'>{billing?.billing_period}</p>
-                            </div>
-                            <div className='text-sm mb-4'>
-                                <p className='text-muted-foreground mb-1'>Expected Amount:</p>
-                                <p className='font-semibold text-lg'>₱{billing?.amount}</p>
-                            </div>
+                        <div className='text-sm mb-4'>
+                            <p className='text-muted-foreground mb-1'>Billing Period:</p>
+                            <p className='font-semibold'>{billing?.billing_period}</p>
+                        </div>
+                        <div className='text-sm mb-4'>
+                            <p className='text-muted-foreground mb-1'>Expected Amount:</p>
+                            <p className='font-semibold text-lg'>₱{billing?.amount}</p>
+                        </div>
 
+                        {form.formState.isSubmitting ? <FormSkeleton rows={3} /> : (
+                        <FieldGroup>
                             <Controller
                                 name="amount"
                                 control={form.control}
@@ -144,6 +146,7 @@ const RecordPaymentDrawer: FC<TRecordPaymentDrawer> = ({ open, setOpen, billing,
                             />
 
                         </FieldGroup>
+                        )}
                     </div>
                 </form>
                 <DrawerFooter>

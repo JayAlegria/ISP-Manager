@@ -3,6 +3,7 @@ import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '
 import { Separator } from '../ui/separator'
 import { Spinner } from '../ui/spinner'
 import { Button } from '../ui/button'
+import { FormSkeleton } from './FormSkeleton'
 
 interface TFormDrawer {
     title: string,
@@ -15,9 +16,10 @@ interface TFormDrawer {
     onCancel?: () => void
     setIsOpen?: () => void
     isSubmitHidden?: boolean
+    skeletonRows?: number
 
 }
-const FormDrawer: FC<TFormDrawer> = ({ isSubmitHidden, id, title, formInputs, buttonText, onCancel, onSubmit, IsOpen, setIsOpen, form }) => {
+const FormDrawer: FC<TFormDrawer> = ({ isSubmitHidden, id, title, formInputs, buttonText, onCancel, onSubmit, IsOpen, setIsOpen, form, skeletonRows }) => {
     return (
         <Drawer open={IsOpen} onOpenChange={setIsOpen} swipeDirection='right'>
             <DrawerContent>
@@ -27,7 +29,7 @@ const FormDrawer: FC<TFormDrawer> = ({ isSubmitHidden, id, title, formInputs, bu
                     </DrawerHeader>
                     <Separator />
                     <div className='min-h-0 flex-1 overflow-y-auto px-5 py-5'>
-                        {formInputs}
+                        {form.formState.isSubmitting ? <FormSkeleton rows={skeletonRows} /> : formInputs}
                     </div>
                 </form>
                 <DrawerFooter >

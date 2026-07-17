@@ -10,6 +10,7 @@ import { Separator } from '../ui/separator'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
+import { FormSkeleton } from '../drawer/FormSkeleton'
 import { UserFormInput, UserFormOutput, userSchema } from '@/schemas/userSchema'
 import { updateCustomer } from '@/actions/users/update'
 import { TCustomer } from '@/types/customers'
@@ -89,6 +90,7 @@ const UpdateCustomerDrawer: FC<TUpdateCustomerDrawer> = ({ open, setOpen, custom
                     </DrawerHeader>
                     <Separator />
                     <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+                        {form.formState.isSubmitting ? <FormSkeleton rows={9} /> : (
                         <FieldGroup>
                             <Controller
                                 name="account_number"
@@ -287,6 +289,7 @@ const UpdateCustomerDrawer: FC<TUpdateCustomerDrawer> = ({ open, setOpen, custom
                                 )}
                             />
                         </FieldGroup>
+                        )}
                     </div>
                 </form>
                 <DrawerFooter>

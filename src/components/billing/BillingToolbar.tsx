@@ -47,7 +47,6 @@ interface BillingToolbarProps {
 }
 
 export function BillingToolbar({ table, onRefresh, onGenerate, isRefreshing }: BillingToolbarProps) {
-    console.log(table.getAllColumns())
     return (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-2">

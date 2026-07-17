@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { createClient } from "@/lib/supabase/server";
 
-const protectedPaths = ["/dashboard", "/customers", "/plans", "/billing", "/payments"];
+const protectedPaths = ["/dashboard", "/customers", "/plans", "/billing", "/payments", "/tickets", "/technicians"];
 
 export async function middleware(request: NextRequest) {
   const response = await updateSession(request);
@@ -42,6 +42,8 @@ export const config = {
     "/plans/:path*",
     "/billing/:path*",
     "/payments/:path*",
+    "/tickets/:path*",
+    "/technicians/:path*",
     "/admin-login",
   ],
 };

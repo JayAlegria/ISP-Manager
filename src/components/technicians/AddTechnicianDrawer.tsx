@@ -60,6 +60,7 @@ const AddTechnicianDrawer: FC<TAddTechnicianDrawer> = ({ open, setOpen, onSucces
             setIsOpen={setOpen}
             onCancel={onCancel}
             onSubmit={onSubmit}
+            skeletonRows={6}
             formInputs={
                 <FieldGroup>
                     <Controller

@@ -63,6 +63,7 @@ const AddCustomerDrawer: FC<TAddCustomerDrawer> = ({ open, setOpen, planOptions,
             setIsOpen={setOpen}
             onCancel={onCancel}
             onSubmit={onSubmit}
+            skeletonRows={9}
             formInputs={
                 <FieldGroup>
                     <Controller

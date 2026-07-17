@@ -78,6 +78,7 @@ const UpdateTechnicianDrawer: FC<UpdateTechnicianDrawerProps> = ({
             setIsOpen={setOpen}
             onCancel={onCancel}
             onSubmit={onSubmit}
+            skeletonRows={6}
             formInputs={
                 <FieldGroup>
                     <Controller

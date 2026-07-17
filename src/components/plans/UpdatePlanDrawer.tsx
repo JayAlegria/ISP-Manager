@@ -12,6 +12,7 @@ import { FormValues, servicePlanSchema } from '@/schemas/servicePlanSchema'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from 'sonner'
 import { Spinner } from '../ui/spinner'
+import { FormSkeleton } from '../drawer/FormSkeleton'
 import { updateServicePlan } from '@/actions/plans/update'
 
 
@@ -77,6 +78,7 @@ const UpdatePlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen, plan }) => {
                     </DrawerHeader>
                     <Separator />
                     <div className='min-h-0 flex-1 overflow-y-auto px-5 py-5'>
+                        {form.formState.isSubmitting ? <FormSkeleton rows={4} /> : (
                         <FieldGroup>
                             <Controller
                                 name="name"
@@ -166,6 +168,7 @@ const UpdatePlanDrawer: FC<TAddPlanDrawer> = ({ open, setOpen, plan }) => {
                                 )}
                             />
                         </FieldGroup>
+                        )}
                     </div>
                 </form>
                 <DrawerFooter >
