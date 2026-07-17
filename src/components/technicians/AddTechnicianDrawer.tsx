@@ -12,7 +12,7 @@ import { Input } from "../ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 const defaultValues: TechnicianFormInput = {
-    employee_id: "",
+    employee_id: "AUTO",
     name: "",
     contact_number: "",
     email: "",
@@ -60,28 +60,9 @@ const AddTechnicianDrawer: FC<TAddTechnicianDrawer> = ({ open, setOpen, onSucces
             setIsOpen={setOpen}
             onCancel={onCancel}
             onSubmit={onSubmit}
-            skeletonRows={6}
+            skeletonRows={5}
             formInputs={
                 <FieldGroup>
-                    <Controller
-                        name="employee_id"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor={field.name}>Employee ID</FieldLabel>
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    name={field.name}
-                                    aria-invalid={fieldState.invalid}
-                                    placeholder="EMP001"
-                                    autoComplete="off"
-                                />
-                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                        )}
-                    />
-
                     <Controller
                         name="name"
                         control={form.control}

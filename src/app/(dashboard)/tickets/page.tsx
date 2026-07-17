@@ -13,7 +13,6 @@ async function page() {
 
     return (
         <>
-            <ContentHeader />
             <div className="py-5">
                 <TicketsTable
                     tickets={ticketsRes.data ?? []}

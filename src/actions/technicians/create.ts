@@ -5,6 +5,7 @@ import { TActionResponse } from "@/types/response"
 import { TTechnician } from "@/types/technicians"
 import { technicianSchema } from "@/schemas/technicianSchema"
 import { serializePrisma } from "@/util/serialize"
+import { generateEmployeeId } from "@/util/employeeId"
 
 export async function createTechnician(
     data: unknown
@@ -12,20 +13,11 @@ export async function createTechnician(
     try {
         const validatedData = technicianSchema.parse(data)
 
-        const existingTechnician = await prisma.technician.findUnique({
-            where: { employee_id: validatedData.employee_id },
-        })
-
-        if (existingTechnician) {
-            return {
-                success: false,
-                message: "Employee ID already exists",
-            }
-        }
+        const employeeId = await generateEmployeeId()
 
         const technician = await prisma.technician.create({
             data: {
-                employee_id: validatedData.employee_id,
+                employee_id: employeeId,
                 name: validatedData.name,
                 contact_number: validatedData.contact_number,
                 email: validatedData.email,
@@ -36,7 +28,7 @@ export async function createTechnician(
 
         return {
             success: true,
-            message: "Technician created successfully",
+            message: `Technician created successfully (Employee ID ${technician.employee_id})`,
             data: serializePrisma(technician) as TTechnician,
         }
     } catch (error) {

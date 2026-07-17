@@ -11,7 +11,7 @@ import { Input } from '../ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const defaultValues: UserFormInput = {
-    account_number: "",
+    account_number: "AUTO",
     name: "",
     facebook_name: "",
     contact_number: "",
@@ -63,27 +63,9 @@ const AddCustomerDrawer: FC<TAddCustomerDrawer> = ({ open, setOpen, planOptions,
             setIsOpen={setOpen}
             onCancel={onCancel}
             onSubmit={onSubmit}
-            skeletonRows={9}
+            skeletonRows={8}
             formInputs={
                 <FieldGroup>
-                    <Controller
-                        name="account_number"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor={field.name}>Account Number</FieldLabel>
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    name={field.name}
-                                    aria-invalid={fieldState.invalid}
-                                    placeholder="ISP0001"
-                                    autoComplete="off"
-                                />
-                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                        )}
-                    />
                     <Controller
                         name="name"
                         control={form.control}

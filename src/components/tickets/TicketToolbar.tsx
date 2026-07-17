@@ -35,7 +35,7 @@ const categoryOptions = [
 ]
 
 const columnLabels: Record<string, string> = {
-    ticket_number: "Ticket #",
+    ticket_number: "Ticket Number",
     user_name: "Customer",
     category: "Category",
     technician_name: "Technician",
