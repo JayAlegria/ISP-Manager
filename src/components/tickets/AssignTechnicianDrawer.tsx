@@ -36,6 +36,13 @@ const AssignTechnicianDrawer: FC<AssignTechnicianDrawerProps> = ({
         mode: "onChange",
     })
 
+    const technicianOptions = technicians
+        .filter((t) => t.id)
+        .map((technician) => ({
+            label: `${technician.name} (${technician.employee_id})`,
+            value: technician.id,
+        }))
+
     async function onSubmit(formData: AssignTechnicianOutput) {
         if (!ticket?.id) return
 
@@ -81,6 +88,7 @@ const AssignTechnicianDrawer: FC<AssignTechnicianDrawerProps> = ({
                                 <FieldLabel htmlFor="technician-id">Select Technician</FieldLabel>
                                 <Select
                                     {...field}
+                                    items={technicianOptions}
                                     name={field.name}
                                     value={field.value}
                                     onValueChange={field.onChange}
@@ -90,13 +98,11 @@ const AssignTechnicianDrawer: FC<AssignTechnicianDrawerProps> = ({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            {technicians
-                                                .filter((t) => t.id)
-                                                .map((technician) => (
-                                                    <SelectItem key={technician.id} value={technician.id}>
-                                                        {technician.name} ({technician.employee_id})
-                                                    </SelectItem>
-                                                ))}
+                                            {technicianOptions.map((option) => (
+                                                <SelectItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>

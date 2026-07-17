@@ -4,7 +4,7 @@ import { FC } from "react"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer"
 import { Separator } from "../ui/separator"
 import { Badge } from "../ui/badge"
-import { TTicketWithRelations } from "@/types/tickets"
+import { TTicketWithRelations, ticketStatusLabels } from "@/types/tickets"
 
 interface TicketDetailsDrawerProps {
     open: boolean
@@ -61,7 +61,7 @@ const TicketDetailsDrawer: FC<TicketDetailsDrawerProps> = ({ open, setOpen, tick
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Status:</span>
                                 <Badge className={statusColors[ticket.status] || "bg-gray-50 text-gray-700"}>
-                                    {ticket.status}
+                                    {ticketStatusLabels[ticket.status] ?? ticket.status}
                                 </Badge>
                             </div>
                             <div className="flex justify-between">

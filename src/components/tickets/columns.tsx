@@ -2,7 +2,7 @@
 
 import { Column, ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
-import { TTicketWithRelations } from "@/types/tickets"
+import { TTicketWithRelations, ticketStatusLabels } from "@/types/tickets"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -12,7 +12,7 @@ interface TicketColumnActions {
     onView: (ticket: TTicketWithRelations) => void
     onEdit: (ticket: TTicketWithRelations) => void
     onAssign: (ticket: TTicketWithRelations) => void
-    onChangeStatus: (ticket: TTicketWithRelations) => void
+    onChangeStatus: (ticket: TTicketWithRelations, status: string) => void
     onResolve: (ticket: TTicketWithRelations) => void
     onClose: (ticket: TTicketWithRelations) => void
     onCancel: (ticket: TTicketWithRelations) => void
@@ -105,7 +105,7 @@ export function getColumns(actions: TicketColumnActions): ColumnDef<TTicketWithR
                 const colorClass = statusColors[status] || "bg-muted text-muted-foreground"
                 return (
                     <Badge className={colorClass}>
-                        {status?.toLowerCase() || "unknown"}
+                        {ticketStatusLabels[status] ?? status ?? "Unknown"}
                     </Badge>
                 )
             },

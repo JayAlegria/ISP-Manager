@@ -25,11 +25,10 @@ import UpdateTicketDrawer from "./UpdateTicketDrawer"
 import AssignTechnicianDrawer from "./AssignTechnicianDrawer"
 import ResolveTicketDrawer from "./ResolveTicketDrawer"
 import TicketDetailsDrawer from "./TicketDetailsDrawer"
-import ChangeStatusDialog from "./ChangeStatusDialog"
 import ConfirmTicketActionDialog from "./ConfirmTicketActionDialog"
 import { TTicketWithRelations, TTechnicianInfo } from "@/types/tickets"
 import { getTickets } from "@/actions/tickets/get"
-import { cancelTicket, closeTicket } from "@/actions/tickets/update"
+import { cancelTicket, closeTicket, updateTicketStatus } from "@/actions/tickets/update"
 
 interface TTicketsTable {
     tickets: TTicketWithRelations[]
@@ -55,7 +54,7 @@ const globalFilterFn: FilterFn<TTicketWithRelations> = (row, _columnId, filterVa
 const TicketsTable: FC<TTicketsTable> = ({ tickets, technicians, customers }) => {
     const [data, setData] = useState<TTicketWithRelations[]>(tickets)
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
-    const [isLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -68,7 +67,6 @@ const TicketsTable: FC<TTicketsTable> = ({ tickets, technicians, customers }) =>
     const [openAssignDrawer, setOpenAssignDrawer] = useState(false)
     const [openResolveDrawer, setOpenResolveDrawer] = useState(false)
     const [openDetailsDrawer, setOpenDetailsDrawer] = useState(false)
-    const [openStatusDialog, setOpenStatusDialog] = useState(false)
     const [openCloseDialog, setOpenCloseDialog] = useState(false)
     const [openCancelDialog, setOpenCancelDialog] = useState(false)
     const [selectedTicket, setSelectedTicket] = useState<TTicketWithRelations | undefined>(undefined)
@@ -107,9 +105,19 @@ const TicketsTable: FC<TTicketsTable> = ({ tickets, technicians, customers }) =>
         setOpenAssignDrawer(true)
     }
 
-    const handleChangeStatus = (ticket: TTicketWithRelations) => {
-        setSelectedTicket(ticket)
-        setOpenStatusDialog(true)
+    const handleChangeStatus = async (ticket: TTicketWithRelations, newStatus: string) => {
+        setIsLoading(true)
+        try {
+            const res = await updateTicketStatus(ticket.id, newStatus)
+            if (res.success) {
+                toast.success(res.message, { position: "top-right" })
+                await refreshTickets()
+            } else {
+                toast.error(res.message, { position: "top-right" })
+            }
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const handleResolve = (ticket: TTicketWithRelations) => {
@@ -294,13 +302,6 @@ const TicketsTable: FC<TTicketsTable> = ({ tickets, technicians, customers }) =>
                 open={openDetailsDrawer}
                 setOpen={() => setOpenDetailsDrawer(false)}
                 ticket={selectedTicket}
-            />
-
-            <ChangeStatusDialog
-                open={openStatusDialog}
-                setOpen={() => setOpenStatusDialog(false)}
-                ticket={selectedTicket}
-                onSuccess={refreshTickets}
             />
 
             <ConfirmTicketActionDialog

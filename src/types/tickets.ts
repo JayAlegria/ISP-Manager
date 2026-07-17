@@ -1,6 +1,15 @@
 export type TTicketCategory = "internet_problem" | "billing_problem" | "relocation" | "installation"
 export type TTicketStatus = "OPEN" | "ASSIGNED" | "IN_PROGRESS" | "RESOLVED" | "CLOSED" | "CANCELLED"
 
+export const ticketStatusLabels: Record<string, string> = {
+    OPEN: "Open",
+    ASSIGNED: "Assigned",
+    IN_PROGRESS: "In Progress",
+    RESOLVED: "Resolved",
+    CLOSED: "Closed",
+    CANCELLED: "Cancelled",
+}
+
 export type TCustomerInfo = {
     id: string
     account_number: string

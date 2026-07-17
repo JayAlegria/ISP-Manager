@@ -10,7 +10,7 @@ import FormDrawer from "../drawer/FormDrawer"
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { TTicketWithRelations } from "@/types/tickets"
+import { TTicketWithRelations, ticketStatusLabels } from "@/types/tickets"
 
 const categoryOptions = [
     { label: "Internet Problem", value: "internet_problem" },
@@ -68,7 +68,9 @@ const UpdateTicketDrawer: FC<UpdateTicketDrawerProps> = ({ open, setOpen, ticket
                 <FieldGroup>
                     <div className="mb-4 p-3 bg-muted rounded">
                         <p className="text-sm font-medium">Ticket: {ticket?.ticket_number}</p>
-                        <p className="text-sm text-muted-foreground">Status: {ticket?.status}</p>
+                        <p className="text-sm text-muted-foreground">
+                            Status: {ticket?.status ? ticketStatusLabels[ticket.status] ?? ticket.status : "—"}
+                        </p>
                     </div>
 
                     <Controller

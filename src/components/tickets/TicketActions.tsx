@@ -1,6 +1,6 @@
 "use client"
 
-import { Eye, Pencil, UserCheck, CheckCircle, Lock, XCircle, EllipsisVertical } from "lucide-react"
+import { Eye, Pencil, UserCheck, PlayCircle, CheckCircle, Lock, XCircle, EllipsisVertical } from "lucide-react"
 import { TTicketWithRelations } from "@/types/tickets"
 import {
     DropdownMenu,
@@ -14,7 +14,7 @@ interface TicketActionsProps {
     onView: (ticket: TTicketWithRelations) => void
     onEdit: (ticket: TTicketWithRelations) => void
     onAssign: (ticket: TTicketWithRelations) => void
-    onChangeStatus: (ticket: TTicketWithRelations) => void
+    onChangeStatus: (ticket: TTicketWithRelations, status: string) => void | Promise<void>
     onResolve: (ticket: TTicketWithRelations) => void
     onClose: (ticket: TTicketWithRelations) => void
     onCancel: (ticket: TTicketWithRelations) => void
@@ -30,8 +30,6 @@ export function TicketActions({
     onClose,
     onCancel,
 }: TicketActionsProps) {
-    const canAssign = ticket.status === "OPEN" || ticket.status === "ASSIGNED"
-    const canResolve = ticket.status === "IN_PROGRESS"
     const canClose = ticket.status === "RESOLVED"
     const canCancel = ticket.status !== "CLOSED" && ticket.status !== "CANCELLED"
 
@@ -49,22 +47,26 @@ export function TicketActions({
                     <Pencil />
                     Edit
                 </DropdownMenuItem>
-                {canAssign && (
+
+                {ticket.status === "OPEN" && (
                     <DropdownMenuItem onClick={() => onAssign(ticket)}>
                         <UserCheck />
                         Assign Technician
                     </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => onChangeStatus(ticket)}>
-                    <CheckCircle />
-                    Change Status
-                </DropdownMenuItem>
-                {canResolve && (
+                {ticket.status === "ASSIGNED" && (
+                    <DropdownMenuItem onClick={() => onChangeStatus(ticket, "IN_PROGRESS")}>
+                        <PlayCircle />
+                        In Progress
+                    </DropdownMenuItem>
+                )}
+                {ticket.status === "IN_PROGRESS" && (
                     <DropdownMenuItem onClick={() => onResolve(ticket)}>
                         <CheckCircle />
                         Resolve
                     </DropdownMenuItem>
                 )}
+
                 {canClose && (
                     <DropdownMenuItem onClick={() => onClose(ticket)}>
                         <Lock />
