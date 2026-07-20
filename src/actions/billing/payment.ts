@@ -60,6 +60,12 @@ export async function recordPayment(
             }
         }
 
+        const duplicateReference = await prisma.payments.findFirst({
+            where: {
+                reference_number: formData.reference_number,
+            },
+        })
+
         await prisma.payments.create({
             data: {
                 billing_id: BigInt(billingId),
@@ -70,6 +76,7 @@ export async function recordPayment(
                 verified: false,
                 verified_at: null,
                 verification_status: "PENDING",
+                duplicate: !!duplicateReference,
             },
         })
 
@@ -78,7 +85,9 @@ export async function recordPayment(
 
         return {
             success: true,
-            message: "Payment recorded and pending verification",
+            message: duplicateReference
+                ? "Payment recorded, but this reference number was already used on another payment — flagged as duplicate for review"
+                : "Payment recorded and pending verification",
         }
     } catch (error) {
         console.error("Failed to record payment", error)

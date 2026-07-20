@@ -5,8 +5,20 @@ import { TActionResponse } from "@/types/response"
 import { TBillingWithCustomer } from "@/types/billing"
 import { serializePrisma } from "@/util/serialize"
 
+async function markOverdueBillings() {
+    await prisma.billing.updateMany({
+        where: {
+            status: "PENDING",
+            due_date: { lt: new Date() },
+        },
+        data: { status: "OVERDUE" },
+    })
+}
+
 export async function getBilling(): Promise<TActionResponse<TBillingWithCustomer[]>> {
     try {
+        await markOverdueBillings()
+
         const billings = await prisma.billing.findMany({
             include: {
                 user: {
@@ -57,6 +69,8 @@ export async function getBillingDetails(
     billingId: string
 ): Promise<TActionResponse<TBillingWithCustomer & { payment?: any }>> {
     try {
+        await markOverdueBillings()
+
         const billing = await prisma.billing.findUnique({
             where: {
                 id: BigInt(billingId),
