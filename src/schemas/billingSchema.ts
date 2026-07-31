@@ -6,6 +6,10 @@ export const recordPaymentSchema = z.object({
     payment_method: z.string().min(1, "Payment method is required"),
 });
 
+export const createPaymentApiSchema = recordPaymentSchema.extend({
+    billing_id: z.string().min(1, "billing_id is required"),
+});
+
 export const voidBillingSchema = z.object({
     reason: z.string().min(1, "Reason is required"),
 });

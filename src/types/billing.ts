@@ -49,3 +49,29 @@ export type TBillingReminder = {
     reminder_type: string;
     sent_at: string;
 };
+
+export type TBillingGenerationCreated = {
+    id: string;
+    customer_id: string;
+    account_number: string;
+    customer_name: string | null;
+    customer_email: string | null;
+    billing_period: string;
+    due_date: string;
+    amount: string;
+};
+
+export type TBillingGenerationSkipped = {
+    customer_id: string;
+    account_number: string;
+    customer_name: string | null;
+    customer_email: string | null;
+    billing_period: string;
+    reason: string;
+};
+
+export type TBillingGenerationResult = {
+    billing_period: string;
+    created: TBillingGenerationCreated[];
+    skipped: TBillingGenerationSkipped[];
+};

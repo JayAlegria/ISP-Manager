@@ -15,15 +15,6 @@ async function page() {
     return (
         <>
             <div className="py-5">
-                <div className="flex justify-center w-full">
-
-                    <Card className="bg-green-100">
-                        <CardContent className="w-full ">
-                            <p>Active User</p>
-                            <p className="text-3xl font-bold">1000</p>
-                        </CardContent>
-                    </Card>
-                </div>
                 <CustomersTable customers={customersRes.data ?? []} planOptions={planOptions} />
             </div>
         </>

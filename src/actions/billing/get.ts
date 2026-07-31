@@ -4,16 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { TActionResponse } from "@/types/response"
 import { TBillingWithCustomer } from "@/types/billing"
 import { serializePrisma } from "@/util/serialize"
-
-async function markOverdueBillings() {
-    await prisma.billing.updateMany({
-        where: {
-            status: "PENDING",
-            due_date: { lt: new Date() },
-        },
-        data: { status: "OVERDUE" },
-    })
-}
+import { markOverdueBillings } from "@/util/billingStatus"
 
 export async function getBilling(): Promise<TActionResponse<TBillingWithCustomer[]>> {
     try {
