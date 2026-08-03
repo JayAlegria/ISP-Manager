@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     const parsed = paymentReceiptFieldsSchema.safeParse({
         account_number: incoming.get("account_number"),
-        amount: incoming.get("amount"),
+        billing_period: incoming.get("billing_period"),
         payment_method: incoming.get("payment_method"),
     })
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     const forwardData = new FormData()
     forwardData.append("account_number", parsed.data.account_number)
-    forwardData.append("amount", parsed.data.amount)
+    forwardData.append("billing_period", parsed.data.billing_period)
     forwardData.append("payment_method", parsed.data.payment_method)
     forwardData.append("submitted_at", new Date().toISOString())
     forwardData.append("receipt", receipt, receipt.name)

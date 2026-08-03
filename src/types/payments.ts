@@ -20,6 +20,7 @@ export type TPaymentWithDetails = {
     verified_at: string | null;
     verified_by: string | null;
     isFraud: boolean | null;
+    fraud_reason: string | null;
     duplicate: boolean | null;
     billing_id: string | null;
     billing?: {

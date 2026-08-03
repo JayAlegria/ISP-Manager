@@ -1,10 +1,12 @@
 "use client"
 import { FC, useEffect, useState } from 'react'
+import { TriangleAlert } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
 import { Skeleton } from '../ui/skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { getPaymentDetails } from '@/actions/payments/get'
 import { TPaymentWithDetails } from '@/types/payments'
 import { normalizeVerificationStatus, paymentMethodLabels } from './columns'
@@ -161,11 +163,21 @@ const PaymentDetailsDrawer: FC<TPaymentDetailsDrawer> = ({ open, setOpen, paymen
                                     <span className="text-muted-foreground">Reference Number:</span>
                                     <span>{payment.reference_number || "—"}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between items-center">
                                     <span className="text-muted-foreground">Verification Status:</span>
-                                    <Badge className={statusColors[normalizeVerificationStatus(payment.verification_status)]}>
-                                        {normalizeVerificationStatus(payment.verification_status).toLowerCase()}
-                                    </Badge>
+                                    <div className="flex items-center gap-1.5">
+                                        <Badge className={statusColors[normalizeVerificationStatus(payment.verification_status)]}>
+                                            {normalizeVerificationStatus(payment.verification_status).toLowerCase()}
+                                        </Badge>
+                                        {payment.billing?.amount != null && payment.amount !== payment.billing.amount && (
+                                            <Tooltip>
+                                                <TooltipTrigger render={<TriangleAlert className="size-3.5 cursor-default text-amber-500" />} />
+                                                <TooltipContent>
+                                                    Payment amount (₱{payment.amount}) does not match billing amount (₱{payment.billing.amount})
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        )}
+                                    </div>
                                 </div>
                                 {(payment.isFraud || payment.duplicate) && (
                                     <div className="flex justify-between">
@@ -178,6 +190,12 @@ const PaymentDetailsDrawer: FC<TPaymentDetailsDrawer> = ({ open, setOpen, paymen
                                                 <Badge className="bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300">Duplicate</Badge>
                                             )}
                                         </div>
+                                    </div>
+                                )}
+                                {payment.isFraud && payment.fraud_reason && (
+                                    <div className="flex justify-between gap-4">
+                                        <span className="text-muted-foreground shrink-0">Fraud Reason:</span>
+                                        <span className="text-right text-red-700 dark:text-red-400">{payment.fraud_reason}</span>
                                     </div>
                                 )}
                                 {payment.verified_at && (

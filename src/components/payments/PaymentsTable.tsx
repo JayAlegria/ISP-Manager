@@ -46,7 +46,7 @@ const globalFilterFn: FilterFn<TPaymentWithDetails> = (row, _columnId, filterVal
 
 const PaymentsTable: FC<TPaymentsTable> = ({ payments }) => {
     const [data, setData] = useState<TPaymentWithDetails[]>(payments)
-    const [isLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
 
     const [sorting, setSorting] = useState<SortingState>([])
@@ -106,12 +106,14 @@ const PaymentsTable: FC<TPaymentsTable> = ({ payments }) => {
             if (res.success) {
                 toast.success(res.message, { position: "top-right" })
                 setOpenVerifyDialog(false)
+                setIsLoading(true)
                 await refreshPayments()
             } else {
                 toast.error(res.message, { position: "top-right" })
             }
         } finally {
             setIsVerifying(false)
+            setIsLoading(false)
         }
     }
 
@@ -124,12 +126,14 @@ const PaymentsTable: FC<TPaymentsTable> = ({ payments }) => {
             if (res.success) {
                 toast.success(res.message, { position: "top-right" })
                 setOpenRejectDialog(false)
+                setIsLoading(true)
                 await refreshPayments()
             } else {
                 toast.error(res.message, { position: "top-right" })
             }
         } finally {
             setIsRejecting(false)
+            setIsLoading(false)
         }
     }
 

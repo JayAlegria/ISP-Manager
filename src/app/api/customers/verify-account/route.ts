@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { findCustomerByAccountNumber } from "@/util/customerQueries"
+import { getActiveBillingPeriodsForAccount } from "@/util/billingQueries"
 
 export async function GET(request: NextRequest) {
     const accountNumber = request.nextUrl.searchParams.get("account_number")?.trim()
@@ -12,6 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     const customer = await findCustomerByAccountNumber(accountNumber)
+    const billingPeriods = customer ? await getActiveBillingPeriodsForAccount(accountNumber) : []
 
     return NextResponse.json({
         success: true,
@@ -19,6 +21,7 @@ export async function GET(request: NextRequest) {
         data: {
             exists: !!customer,
             name: customer?.name ?? null,
+            billing_periods: billingPeriods,
         },
     })
 }

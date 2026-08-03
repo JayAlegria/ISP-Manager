@@ -38,11 +38,17 @@ export async function POST(request: NextRequest) {
     try {
         const payment = await createPaymentForBilling(parsed.data)
 
+        const flags: string[] = []
+        if (payment.is_fraud) flags.push("flagged as potential fraud")
+        if (payment.duplicate) flags.push("this reference number was already used")
+        if (payment.amount_mismatch) flags.push(`the amount doesn't match the billing amount (₱${payment.billing_amount})`)
+
         return NextResponse.json({
             success: true,
-            message: payment.duplicate
-                ? "Payment recorded, but this reference number was already used on another payment — flagged as duplicate for review"
-                : "Payment recorded and pending verification",
+            message:
+                flags.length > 0
+                    ? `Payment recorded, but ${flags.join(" and ")} — pending manual review`
+                    : "Payment recorded and pending verification",
             data: payment,
         })
     } catch (error) {

@@ -8,6 +8,9 @@ export const recordPaymentSchema = z.object({
 
 export const createPaymentApiSchema = recordPaymentSchema.extend({
     billing_id: z.string().min(1, "billing_id is required"),
+    receipt_url: z.string().url().optional(),
+    is_fraud: z.boolean().optional(),
+    fraud_reason: z.string().optional(),
 });
 
 export const voidBillingSchema = z.object({
@@ -15,6 +18,11 @@ export const voidBillingSchema = z.object({
 });
 
 export const generateBillingSchema = z.object({
+    billing_period: z.string().regex(/^\d{4}-\d{2}$/, "Invalid billing period format (use YYYY-MM)"),
+});
+
+export const billingLookupSchema = z.object({
+    account_number: z.string().min(1, "account_number is required"),
     billing_period: z.string().regex(/^\d{4}-\d{2}$/, "Invalid billing period format (use YYYY-MM)"),
 });
 

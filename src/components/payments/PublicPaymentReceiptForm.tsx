@@ -3,13 +3,15 @@ import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { CheckCircle2 } from "lucide-react"
+import { CalendarIcon, CheckCircle2 } from "lucide-react"
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Input } from "../ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Button } from "../ui/button"
 import { Spinner } from "../ui/spinner"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { Calendar } from "../ui/calendar"
 import {
     PaymentReceiptFormInput,
     PaymentReceiptFormOutput,
@@ -21,8 +23,13 @@ const paymentMethodOptions = Object.entries(paymentMethodLabels).map(([value, la
 
 const defaultValues: Partial<PaymentReceiptFormInput> = {
     account_number: "",
-    amount: "",
+    billing_period: "",
     payment_method: "",
+}
+
+function formatBillingPeriod(billingPeriod: string): string {
+    const date = new Date(`${billingPeriod}-01`)
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "long" })
 }
 
 type TAccountCheck = {
@@ -34,6 +41,8 @@ type TAccountCheck = {
 export function PublicPaymentReceiptForm() {
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [accountCheck, setAccountCheck] = useState<TAccountCheck | null>(null)
+    const [billingPeriods, setBillingPeriods] = useState<string[]>([])
+    const [billingPeriodOpen, setBillingPeriodOpen] = useState(false)
     const form = useForm<PaymentReceiptFormInput, unknown, PaymentReceiptFormOutput>({
         resolver: zodResolver(paymentReceiptFormSchema),
         defaultValues,
@@ -44,6 +53,8 @@ export function PublicPaymentReceiptForm() {
         if (!accountNumber) return false
 
         setAccountCheck({ value: accountNumber, status: "checking", name: null })
+        setBillingPeriods([])
+        form.setValue("billing_period", "")
 
         try {
             const res = await fetch(`/api/customers/verify-account?account_number=${encodeURIComponent(accountNumber)}`)
@@ -51,6 +62,7 @@ export function PublicPaymentReceiptForm() {
             const exists = !!json?.data?.exists
 
             setAccountCheck({ value: accountNumber, status: exists ? "valid" : "invalid", name: json?.data?.name ?? null })
+            setBillingPeriods(json?.data?.billing_periods ?? [])
 
             if (!exists) {
                 form.setError("account_number", { message: "Account number not found. Please check and try again." })
@@ -76,7 +88,7 @@ export function PublicPaymentReceiptForm() {
 
         const body = new FormData()
         body.append("account_number", data.account_number)
-        body.append("amount", data.amount)
+        body.append("billing_period", data.billing_period)
         body.append("payment_method", data.payment_method)
         body.append("receipt", data.receipt)
 
@@ -91,6 +103,7 @@ export function PublicPaymentReceiptForm() {
                 toast.success(json.message, { position: "top-right" })
                 form.reset(defaultValues)
                 setAccountCheck(null)
+                setBillingPeriods([])
                 setIsSubmitted(true)
             } else {
                 toast.error(json.message ?? "Something went wrong. Please try again.", { position: "top-right" })
@@ -162,19 +175,45 @@ export function PublicPaymentReceiptForm() {
                         />
 
                         <Controller
-                            name="amount"
+                            name="billing_period"
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor={field.name}>Amount Paid</FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id={field.name}
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="₱0.00"
-                                        autoComplete="off"
-                                    />
-                                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                    <FieldLabel htmlFor={field.name}>Billing Period</FieldLabel>
+                                    <Popover open={billingPeriodOpen} onOpenChange={setBillingPeriodOpen}>
+                                        <PopoverTrigger
+                                            id={field.name}
+                                            aria-invalid={fieldState.invalid}
+                                            disabled={billingPeriods.length === 0}
+                                            className="flex w-full items-center justify-start gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground hover:bg-accent aria-invalid:border-destructive disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <CalendarIcon className="size-4 text-muted-foreground" />
+                                            <span className={field.value ? "" : "text-muted-foreground"}>
+                                                {field.value ? formatBillingPeriod(field.value) : "Select the month you're paying for"}
+                                            </span>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                value={field.value}
+                                                onSelect={(date) => {
+                                                    const billingPeriod = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+                                                    field.onChange(billingPeriod)
+                                                    setBillingPeriodOpen(false)
+                                                }}
+                                                disabled={(date) => {
+                                                    const period = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+                                                    return !billingPeriods.includes(period)
+                                                }}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    {fieldState.invalid ? (
+                                        <FieldError errors={[fieldState.error]} />
+                                    ) : accountCheck?.status === "valid" && billingPeriods.length === 0 ? (
+                                        <FieldDescription>No pending billing periods found for this account.</FieldDescription>
+                                    ) : accountCheck?.status !== "valid" ? (
+                                        <FieldDescription>Enter your account number first.</FieldDescription>
+                                    ) : null}
                                 </Field>
                             )}
                         />

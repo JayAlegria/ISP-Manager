@@ -5,7 +5,7 @@ export const MAX_RECEIPT_SIZE_BYTES = 5 * 1024 * 1024
 
 export const paymentReceiptFieldsSchema = z.object({
     account_number: z.string().min(1, "Account number is required"),
-    amount: z.string().min(1, "Amount is required"),
+    billing_period: z.string().regex(/^\d{4}-\d{2}$/, "Please select the billing period"),
     payment_method: z.string().min(1, "Please select a payment method"),
 })
 

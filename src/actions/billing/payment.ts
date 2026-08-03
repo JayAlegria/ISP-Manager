@@ -18,11 +18,16 @@ export async function recordPayment(
             payment_method: formData.payment_method,
         })
 
+        const flags: string[] = []
+        if (result.duplicate) flags.push("this reference number was already used on another payment")
+        if (result.amount_mismatch) flags.push(`the amount doesn't match the billing amount (₱${result.billing_amount})`)
+
         return {
             success: true,
-            message: result.duplicate
-                ? "Payment recorded, but this reference number was already used on another payment — flagged as duplicate for review"
-                : "Payment recorded and pending verification",
+            message:
+                flags.length > 0
+                    ? `Payment recorded, but ${flags.join(" and ")} — flagged for review`
+                    : "Payment recorded and pending verification",
         }
     } catch (error) {
         console.error("Failed to record payment", error)

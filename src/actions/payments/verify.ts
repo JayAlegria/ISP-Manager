@@ -51,13 +51,6 @@ export async function verifyPayment(paymentId: string): Promise<TActionResponse>
             }
         }
 
-        if (payment.amount !== payment.billing.amount) {
-            return {
-                success: false,
-                message: `Payment amount (₱${payment.amount}) does not match billing amount (₱${payment.billing.amount})`,
-            }
-        }
-
         const supabase = await createClient()
         const { data: userData } = await supabase.auth.getUser()
         const now = new Date()

@@ -6,6 +6,9 @@ export type TCreatePaymentInput = {
     reference_number: string
     amount: string
     payment_method: string
+    receipt_url?: string
+    is_fraud?: boolean
+    fraud_reason?: string
 }
 
 export type TCreatePaymentResult = {
@@ -14,9 +17,14 @@ export type TCreatePaymentResult = {
     customer_id: string | null
     reference_number: string
     amount: string
+    billing_amount: string | null
+    amount_mismatch: boolean
     payment_method: string
     verification_status: string
     duplicate: boolean
+    is_fraud: boolean
+    fraud_reason: string | null
+    receipt_url: string | null
 }
 
 export async function createPaymentForBilling(input: TCreatePaymentInput): Promise<TCreatePaymentResult> {
@@ -43,10 +51,6 @@ export async function createPaymentForBilling(input: TCreatePaymentInput): Promi
         throw new Error("Cannot record payment for a voided bill")
     }
 
-    if (input.amount !== billing.amount) {
-        throw new Error(`Payment amount must match billing amount (₱${billing.amount}). Received: ₱${input.amount}`)
-    }
-
     const existingPayment = await prisma.payments.findFirst({
         where: { billing_id: billingId },
         orderBy: { created_at: "desc" },
@@ -71,6 +75,9 @@ export async function createPaymentForBilling(input: TCreatePaymentInput): Promi
             verified_at: null,
             verification_status: "PENDING",
             duplicate: !!duplicateReference,
+            isFraud: input.is_fraud ?? false,
+            fraud_reason: input.fraud_reason ?? null,
+            receipt_url: input.receipt_url ?? null,
         },
     })
 
@@ -83,8 +90,13 @@ export async function createPaymentForBilling(input: TCreatePaymentInput): Promi
         customer_id: billing.customer_id,
         reference_number: payment.reference_number ?? "",
         amount: payment.amount ?? "",
+        billing_amount: billing.amount,
+        amount_mismatch: payment.amount !== billing.amount,
         payment_method: payment.payment_method ?? "",
         verification_status: payment.verification_status ?? "PENDING",
         duplicate: payment.duplicate ?? false,
+        is_fraud: payment.isFraud ?? false,
+        fraud_reason: payment.fraud_reason,
+        receipt_url: payment.receipt_url,
     }
 }

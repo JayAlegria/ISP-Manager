@@ -1,10 +1,11 @@
 "use client";
 
 import { Column, ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, TriangleAlert } from "lucide-react";
 import { TPaymentWithDetails, paymentMethodLabels } from "@/types/payments";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PaymentActions } from "./PaymentActions";
 
 export { paymentMethodLabels };
@@ -102,10 +103,22 @@ export function getColumns(actions: PaymentColumnActions): ColumnDef<TPaymentWit
             filterFn: (row, id, value) => normalizeVerificationStatus(row.getValue(id)) === value,
             cell: ({ row }) => {
                 const normalized = normalizeVerificationStatus(row.original.verification_status);
+                const { amount, billing } = row.original;
+                const amountMismatch = billing?.amount != null && amount !== billing.amount;
                 return (
-                    <Badge className={statusColors[normalized]}>
-                        {normalized.toLowerCase()}
-                    </Badge>
+                    <div className="flex items-center gap-1.5">
+                        <Badge className={statusColors[normalized]}>
+                            {normalized.toLowerCase()}
+                        </Badge>
+                        {amountMismatch && (
+                            <Tooltip>
+                                <TooltipTrigger render={<TriangleAlert className="size-3.5 cursor-default text-amber-500" />} />
+                                <TooltipContent>
+                                    Payment amount (₱{amount}) does not match billing amount (₱{billing?.amount})
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
+                    </div>
                 );
             },
         },
@@ -113,13 +126,25 @@ export function getColumns(actions: PaymentColumnActions): ColumnDef<TPaymentWit
             id: "flags",
             header: "Flags",
             cell: ({ row }) => {
-                const { isFraud, duplicate } = row.original;
+                const { isFraud, fraud_reason, duplicate } = row.original;
                 if (!isFraud && !duplicate) return <span className="text-muted-foreground">—</span>;
                 return (
                     <div className="flex gap-1">
-                        {isFraud && (
-                            <Badge className="bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300">Fraud</Badge>
-                        )}
+                        {isFraud &&
+                            (fraud_reason ? (
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        render={
+                                            <Badge className="cursor-default bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300" />
+                                        }
+                                    >
+                                        Fraud
+                                    </TooltipTrigger>
+                                    <TooltipContent>{fraud_reason}</TooltipContent>
+                                </Tooltip>
+                            ) : (
+                                <Badge className="bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300">Fraud</Badge>
+                            ))}
                         {duplicate && (
                             <Badge className="bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300">Duplicate</Badge>
                         )}

@@ -530,6 +530,7 @@ model payments {
   reference_number    String?
   user_id             String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   isFraud             Boolean?
+  fraud_reason        String?
   billing_id          BigInt?
   duplicate           Boolean?
   verification_status String?
