@@ -81,11 +81,16 @@ const TicketDetailsDrawer: FC<TicketDetailsDrawerProps> = ({ open, setOpen, tick
 
                     {/* Customer Information */}
                     <div>
-                        <h3 className="font-semibold mb-3">Customer Information</h3>
+                        <h3 className="font-semibold mb-3">
+                            Customer Information
+                            {!ticket.user && (ticket.guest_name || ticket.guest_contact_number) && (
+                                <span className="ml-2 text-xs font-normal text-muted-foreground">(Guest — no account)</span>
+                            )}
+                        </h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Name:</span>
-                                <span>{ticket.user?.name || "—"}</span>
+                                <span>{ticket.user?.name || ticket.guest_name || "—"}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Account Number:</span>
@@ -93,7 +98,7 @@ const TicketDetailsDrawer: FC<TicketDetailsDrawerProps> = ({ open, setOpen, tick
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Contact Number:</span>
-                                <span>{ticket.user?.contact_number || "—"}</span>
+                                <span>{ticket.user?.contact_number || ticket.guest_contact_number || "—"}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Address:</span>

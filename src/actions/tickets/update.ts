@@ -6,6 +6,7 @@ import { TTicketWithRelations } from "@/types/tickets"
 import { updateTicketSchema, assignTechnicianSchema, updateStatusSchema, resolveTicketSchema } from "@/schemas/ticketSchema"
 import { serializePrisma } from "@/util/serialize"
 import { isValidStatusTransition } from "@/util/ticketNumber"
+import { notifyTicketAssigned } from "@/util/ticketWebhooks"
 
 export async function updateTicket(
     id: string,
@@ -35,6 +36,7 @@ export async function updateTicket(
                         id: true,
                         employee_id: true,
                         name: true,
+                        email: true,
                     },
                 },
             },
@@ -102,18 +104,23 @@ export async function assignTechnician(
                         id: true,
                         employee_id: true,
                         name: true,
+                        email: true,
                     },
                 },
             },
         })
 
+        const result = serializePrisma({
+            ...updatedTicket,
+            id: updatedTicket.id.toString(),
+        }) as TTicketWithRelations
+
+        await notifyTicketAssigned(result)
+
         return {
             success: true,
             message: "Technician assigned successfully",
-            data: serializePrisma({
-                ...updatedTicket,
-                id: updatedTicket.id.toString(),
-            }) as TTicketWithRelations,
+            data: result,
         }
     } catch (error) {
         console.error("Failed assigning technician", error)
@@ -173,6 +180,7 @@ export async function updateTicketStatus(
                         id: true,
                         employee_id: true,
                         name: true,
+                        email: true,
                     },
                 },
             },
@@ -240,6 +248,7 @@ export async function resolveTicket(
                         id: true,
                         employee_id: true,
                         name: true,
+                        email: true,
                     },
                 },
             },
@@ -303,6 +312,7 @@ export async function closeTicket(ticketId: string): Promise<TActionResponse<TTi
                         id: true,
                         employee_id: true,
                         name: true,
+                        email: true,
                     },
                 },
             },
@@ -365,6 +375,7 @@ export async function cancelTicket(ticketId: string): Promise<TActionResponse<TT
                         id: true,
                         employee_id: true,
                         name: true,
+                        email: true,
                     },
                 },
             },

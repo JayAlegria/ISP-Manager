@@ -1,6 +1,6 @@
 "use client"
 
-import { FC } from "react"
+import { FC, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -10,10 +10,13 @@ import FormDrawer from "../drawer/FormDrawer"
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
+import { Checkbox } from "../ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 const defaultValues: CreateTicketInput = {
     customer_id: "",
+    guest_name: "",
+    guest_contact_number: "",
     category: "internet_problem",
     description: "",
 }
@@ -33,6 +36,8 @@ interface AddTicketDrawerProps {
 }
 
 const AddTicketDrawer: FC<AddTicketDrawerProps> = ({ open, setOpen, customers, onSuccess }) => {
+    const [isGuest, setIsGuest] = useState(false)
+
     const form = useForm<CreateTicketInput, unknown, CreateTicketOutput>({
         defaultValues,
         resolver: zodResolver(createTicketSchema),
@@ -44,11 +49,23 @@ const AddTicketDrawer: FC<AddTicketDrawerProps> = ({ open, setOpen, customers, o
         value: customer.id,
     }))
 
+    function toggleGuest(checked: boolean) {
+        setIsGuest(checked)
+        if (checked) {
+            form.setValue("customer_id", "")
+        } else {
+            form.setValue("guest_name", "")
+            form.setValue("guest_contact_number", "")
+        }
+        form.clearErrors("customer_id")
+    }
+
     async function onSubmit(formData: CreateTicketOutput) {
         const res = await createTicket(formData)
         if (res.success) {
             toast.success(res.message, { position: "top-right" })
             form.reset(defaultValues)
+            setIsGuest(false)
             onSuccess()
             setOpen()
         } else {
@@ -58,6 +75,7 @@ const AddTicketDrawer: FC<AddTicketDrawerProps> = ({ open, setOpen, customers, o
 
     const onCancel = () => {
         form.reset(defaultValues)
+        setIsGuest(false)
         setOpen()
     }
 
@@ -74,36 +92,87 @@ const AddTicketDrawer: FC<AddTicketDrawerProps> = ({ open, setOpen, customers, o
             skeletonRows={3}
             formInputs={
                 <FieldGroup>
-                    <Controller
-                        name="customer_id"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                            <Field>
-                                <FieldLabel htmlFor="customer-id">Customer</FieldLabel>
-                                <Select
-                                    {...field}
-                                    items={customerOptions}
-                                    name={field.name}
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger aria-invalid={fieldState.invalid}>
-                                        <SelectValue placeholder="Select customer" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {customerOptions.map((option) => (
-                                                <SelectItem key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                        )}
-                    />
+                    <Field orientation="horizontal">
+                        <Checkbox
+                            id="is-guest"
+                            checked={isGuest}
+                            onCheckedChange={(value) => toggleGuest(!!value)}
+                        />
+                        <FieldLabel htmlFor="is-guest" className="font-normal">
+                            No account (guest / walk-in request)
+                        </FieldLabel>
+                    </Field>
+
+                    {isGuest ? (
+                        <>
+                            <Controller
+                                name="guest_name"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="guest-name">Full Name</FieldLabel>
+                                        <Input
+                                            {...field}
+                                            id="guest-name"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="Juan Dela Cruz"
+                                            autoComplete="off"
+                                        />
+                                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                    </Field>
+                                )}
+                            />
+
+                            <Controller
+                                name="guest_contact_number"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="guest-contact-number">Contact Number</FieldLabel>
+                                        <Input
+                                            {...field}
+                                            id="guest-contact-number"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="09XXXXXXXXX"
+                                            autoComplete="off"
+                                        />
+                                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                    </Field>
+                                )}
+                            />
+                        </>
+                    ) : (
+                        <Controller
+                            name="customer_id"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field>
+                                    <FieldLabel htmlFor="customer-id">Customer</FieldLabel>
+                                    <Select
+                                        {...field}
+                                        items={customerOptions}
+                                        name={field.name}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger aria-invalid={fieldState.invalid}>
+                                            <SelectValue placeholder="Select customer" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {customerOptions.map((option) => (
+                                                    <SelectItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                </Field>
+                            )}
+                        />
+                    )}
 
                     <Controller
                         name="category"

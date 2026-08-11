@@ -11,3 +11,7 @@ export const servicePlanSchema = z.object({
 })
 
 export type FormValues = z.infer<typeof servicePlanSchema>;
+
+export const plansLookupSchema = z.object({
+    status: z.enum(["active", "inactive", "all"]).optional().default("all"),
+})

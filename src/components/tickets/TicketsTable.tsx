@@ -44,6 +44,8 @@ const globalFilterFn: FilterFn<TTicketWithRelations> = (row, _columnId, filterVa
         ticket.ticket_number,
         ticket.user?.name,
         ticket.user?.account_number,
+        ticket.guest_name,
+        ticket.guest_contact_number,
         ticket.description,
         ticket.category,
     ]

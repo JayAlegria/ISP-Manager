@@ -22,6 +22,7 @@ export type TTechnicianInfo = {
     id: string
     employee_id: string
     name: string
+    email: string
 }
 
 export type TTicket = {
@@ -29,11 +30,13 @@ export type TTicket = {
     created_at: string
     updated_at: string
     ticket_number: string
-    customer_id: string
+    customer_id: string | null
     technician_id: string | null
     category: string
     status: TTicketStatus | string
     description: string
+    guest_name: string | null
+    guest_contact_number: string | null
     assigned_at: string | null
     resolved_at: string | null
     closed_at: string | null

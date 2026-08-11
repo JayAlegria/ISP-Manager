@@ -20,6 +20,7 @@ async function page() {
                         id: t.id,
                         employee_id: t.employee_id,
                         name: t.name,
+                        email: t.email,
                     }))}
                     customers={(customersRes.data ?? []).map((c) => ({
                         id: c.id,

@@ -77,7 +77,12 @@ export function getColumns(actions: TicketColumnActions): ColumnDef<TTicketWithR
         {
             accessorKey: "user.name",
             header: "Customer",
-            cell: ({ row }) => row.original.user?.name || "—",
+            cell: ({ row }) => {
+                const { user, guest_name } = row.original
+                if (user?.name) return user.name
+                if (guest_name) return `${guest_name} (guest)`
+                return "—"
+            },
         },
         {
             accessorKey: "category",

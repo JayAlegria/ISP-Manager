@@ -51,7 +51,7 @@ export function TicketActions({
                 {ticket.status === "OPEN" && (
                     <DropdownMenuItem onClick={() => onAssign(ticket)}>
                         <UserCheck />
-                        Assign Technician
+                        Assign
                     </DropdownMenuItem>
                 )}
                 {ticket.status === "ASSIGNED" && (
