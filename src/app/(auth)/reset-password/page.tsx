@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { ForgotPassword } from "@/components/forgot-password"
+import { ResetPasswordForm } from "@/components/reset-password-form"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function page() {
@@ -17,7 +17,7 @@ export default function page() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <ForgotPassword />
+            <ResetPasswordForm />
           </div>
         </div>
       </div>

@@ -45,6 +45,7 @@ export async function notifyTicketAssigned(ticket: TTicketWithRelations): Promis
             event: "ticket.assigned",
             ticket_id: ticket.id,
             ticket_number: ticket.ticket_number,
+            category: ticket.category,
             description: ticket.description,
             status: ticket.status,
             assigned_at: ticket.assigned_at,

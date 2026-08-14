@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { LoginForm } from "@/components/login-form"
-import { GalleryVerticalEndIcon } from "lucide-react"
 import { login } from "@/actions/auth/login"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function page() {
 
@@ -10,10 +10,11 @@ export default function page() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEndIcon className="size-4" />
-            </div>
-            Acme Inc.
+            <Avatar size="lg">
+              <AvatarImage src={"/assets/avatar.png"} />
+              <AvatarFallback>My Profile</AvatarFallback>
+            </Avatar>
+            HI TECHY
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
